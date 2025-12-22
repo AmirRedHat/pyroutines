@@ -5,7 +5,7 @@ from time import sleep
 sys.path.append("..")
 sys.path.append(".")
 
-from wait_group import RunType, WaitGroup
+from src.wait_group import RunType, WaitGroup
 
 
 @pytest.fixture
@@ -36,8 +36,9 @@ def test__process_wait_for__fail():
     number = 4
     process = Process(target=worker, args=(number,))
     try:
-        wg = WaitGroup()
-        assert wg._process_wait_for(process, number-2)
+        with pytest.raises(TimeoutError):
+            wg = WaitGroup()
+            wg._process_wait_for(process, number-2)
     finally:
         process.kill()
         print("[TEST] process killed by test function !")

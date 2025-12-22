@@ -1,7 +1,7 @@
 from multiprocessing import Pool, cpu_count, Process, Queue
 from typing import Any, Callable
 
-from wait_group import WaitGroup
+from src.wait_group import WaitGroup
 
 
 class ProcessConcurrent:
