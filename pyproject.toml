@@ -1,6 +1,6 @@
 [project]
 name = "pieroutine"
-version = "0.1.0"
+version = "0.2.0"
 description = ""
 authors = [
     {name = "AmirRedHat",email = "amir.ch.charehei1382@gmail.com"}
@@ -10,8 +10,6 @@ requires-python = ">=3.12"
 dependencies = [
 ]
 
-[tool.poetry]
-packages = [{ include = "*", from = "src" }]
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
