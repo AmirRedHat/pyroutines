@@ -5,8 +5,8 @@ from time import time, sleep
 sys.path.append("..")
 sys.path.append(".")
 
-from src.wait_group import WaitGroup
-from src.process import ProcessConcurrent
+from pieroutine.wait_group import WaitGroup
+from pieroutine.process import ProcessConcurrent
 
 
 @pytest.fixture

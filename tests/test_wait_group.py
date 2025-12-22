@@ -5,7 +5,7 @@ from time import sleep
 sys.path.append("..")
 sys.path.append(".")
 
-from src.wait_group import RunType, WaitGroup
+from pieroutine.wait_group import RunType, WaitGroup
 
 
 @pytest.fixture
