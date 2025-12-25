@@ -12,14 +12,14 @@ from pieroutine.process import ProcessConcurrent
 @pytest.fixture
 def numbers():
     return [
-        7,5,6,7,2,3,4,4,2,2,5,6,2,1
+        2,3,4,4,2,2,5,6,2,1
     ]
 
-def worker_with_wait_group(number, wg):
+def worker_with_wait_group(number, wait_group):
     res = number * 2
     sleep(number)
     print(f"after sleeping for {number} secs")
-    wg.done()
+    wait_group.done()
     print(f"number {number} is done")
     return res
 
@@ -33,9 +33,20 @@ def worker_without_wait_group(number):
 def test_run_process_with_wait_group__success(numbers):    
     wg = WaitGroup()
     start_time = time()
-    pr = ProcessConcurrent(worker_with_wait_group, numbers)
+    pr = ProcessConcurrent(worker_with_wait_group, [(num,) for num in numbers])
     queue = Queue(maxsize=len(numbers))
     pr.run_process(wg, queue)
+    wg.wait()
+    queue_result = [queue.get() for _ in range(len(numbers))]
+    assert len(queue_result) == len(numbers)
+    print("[INFO] Process is done at ", time()-start_time)
+    
+def test_run_process_with_auto_done__success(numbers):    
+    wg = WaitGroup()
+    start_time = time()
+    pr = ProcessConcurrent(worker_without_wait_group, [(num,) for num in numbers])
+    queue = Queue(maxsize=len(numbers))
+    pr.run_process(wg, queue, auto_done=True)
     wg.wait()
     queue_result = [queue.get() for _ in range(len(numbers))]
     assert len(queue_result) == len(numbers)
@@ -44,7 +55,7 @@ def test_run_process_with_wait_group__success(numbers):
 def test_run_process_originally__success(numbers):
     plist = []
     for num in numbers:
-        p = Process(target=worker_without_wait_group, args=(num,))
+        p = Process(target=worker_without_wait_group, args=((num,),))
         p.start()
         plist.append(p)
     count = 0

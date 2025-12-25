@@ -18,13 +18,32 @@ class ProcessConcurrent:
         with Pool(processes=self.process_count) as pool:
             return pool.map(self.f, self.arguments)
         
-    def process_worker(self, arg: Any, wait_group: WaitGroup, queue: Queue = None):
+    def process_worker(
+        self, 
+        arg: Any, 
+        wait_group: WaitGroup, 
+        queue: Queue = None,
+        auto_done: bool = False
+    ):
         wait_group.add()
-        if res := self.f(arg, wait_group):
-            queue.put_nowait(res)
+        kwargs = {}
+        if not auto_done:
+            kwargs["wait_group"] = wait_group
+            
+        try:
+            if res := self.f(*arg, **kwargs) and queue is not None:
+                queue.put_nowait(res)
+        finally:
+            if auto_done:
+                wait_group.done()
     
-    def run_process(self, wait_group: WaitGroup, queue: Queue = None):
+    def run_process(
+        self, 
+        wait_group: WaitGroup, 
+        queue: Queue = None,
+        auto_done: bool = False
+    ):
         [
-            Process(target=self.process_worker, args=(arg, wait_group, queue)).start()
+            Process(target=self.process_worker, args=(arg, wait_group, queue, auto_done)).start()
             for arg in self.arguments
         ]
